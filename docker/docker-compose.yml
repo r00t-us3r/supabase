@@ -12,7 +12,7 @@ services:
     image: supabase/studio:20221214-4eecc99
     restart: unless-stopped
     ports:
-      - ${STUDIO_PORT}:3000/tcp
+    - 3000:3000/tcp
     environment:
       STUDIO_PG_META_URL: http://meta:8080
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -32,8 +32,8 @@ services:
     image: kong:2.8.1
     restart: unless-stopped
     ports:
-      - ${KONG_HTTP_PORT}:8000/tcp
-      - ${KONG_HTTPS_PORT}:8443/tcp
+    - 8000:8000/tcp
+    - 8443:8443/tcp
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
@@ -49,8 +49,7 @@ services:
     container_name: supabase-auth
     image: supabase/gotrue:v2.31.0
     depends_on:
-      db: # Disable this if you are using an external Postgres database
-        condition: service_healthy
+    - db
     restart: unless-stopped
     environment:
       GOTRUE_API_HOST: 0.0.0.0
@@ -93,8 +92,7 @@ services:
     container_name: supabase-rest
     image: postgrest/postgrest:v9.0.1.20220717
     depends_on:
-      db: # Disable this if you are using an external Postgres database
-        condition: service_healthy
+    - db
     restart: unless-stopped
     environment:
       PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
@@ -107,8 +105,7 @@ services:
     container_name: realtime-dev.supabase-realtime
     image: supabase/realtime:v2.0.2
     depends_on:
-      db: # Disable this if you are using an external Postgres database
-        condition: service_healthy
+    - db
     restart: unless-stopped
     environment:
       PORT: 4000
@@ -133,10 +130,8 @@ services:
     container_name: supabase-storage
     image: supabase/storage-api:v0.26.1
     depends_on:
-      db: # Disable this if you are using an external Postgres database
-        condition: service_healthy
-      rest:
-        condition: service_started
+    - db
+    - rest
     restart: unless-stopped
     environment:
       ANON_KEY: ${ANON_KEY}
@@ -170,8 +165,7 @@ services:
     container_name: supabase-meta
     image: supabase/postgres-meta:v0.52.1
     depends_on:
-      db: # Disable this if you are using an external Postgres database
-        condition: service_healthy
+    - db
     restart: unless-stopped
     environment:
       PG_META_PORT: 8080
@@ -198,8 +192,7 @@ services:
       - log_min_messages=fatal # prevents Realtime polling queries from appearing in logs
     restart: unless-stopped
     ports:
-      # Pass down internal port because it's set dynamically by other services
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    - 5432:5432/tcp
     environment:
       POSTGRES_HOST: /var/run/postgresql
       PGPORT: ${POSTGRES_PORT}

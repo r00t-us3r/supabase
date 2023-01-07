@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.27.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: auth
+  name: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: auth
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.27.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: auth
+    spec:
+      containers:
+        - env:
+            - name: API_EXTERNAL_URL
+            - name: GOTRUE_API_HOST
+              value: 0.0.0.0
+            - name: GOTRUE_API_PORT
+              value: "9999"
+            - name: GOTRUE_DB_DATABASE_URL
+              value: postgres://supabase_auth_admin:@:/
+            - name: GOTRUE_DB_DRIVER
+              value: postgres
+            - name: GOTRUE_DISABLE_SIGNUP
+            - name: GOTRUE_EXTERNAL_EMAIL_ENABLED
+            - name: GOTRUE_EXTERNAL_PHONE_ENABLED
+            - name: GOTRUE_JWT_ADMIN_ROLES
+              value: service_role
+            - name: GOTRUE_JWT_AUD
+              value: authenticated
+            - name: GOTRUE_JWT_DEFAULT_GROUP_NAME
+              value: authenticated
+            - name: GOTRUE_JWT_EXP
+            - name: GOTRUE_JWT_SECRET
+            - name: GOTRUE_MAILER_AUTOCONFIRM
+            - name: GOTRUE_MAILER_URLPATHS_CONFIRMATION
+            - name: GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE
+            - name: GOTRUE_MAILER_URLPATHS_INVITE
+            - name: GOTRUE_MAILER_URLPATHS_RECOVERY
+            - name: GOTRUE_SITE_URL
+            - name: GOTRUE_SMS_AUTOCONFIRM
+            - name: GOTRUE_SMTP_ADMIN_EMAIL
+            - name: GOTRUE_SMTP_HOST
+            - name: GOTRUE_SMTP_PASS
+            - name: GOTRUE_SMTP_PORT
+            - name: GOTRUE_SMTP_SENDER_NAME
+            - name: GOTRUE_SMTP_USER
+            - name: GOTRUE_URI_ALLOW_LIST
+            - name: MFA_ENABLED
+          image: supabase/gotrue:v2.31.0
+          name: supabase-auth
+          resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.27.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: realtime
+  name: realtime
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: realtime
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.27.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: realtime
+    spec:
+      containers:
+        - args:
+            - sh
+            - -c
+            - /app/bin/migrate && /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)' && /app/bin/server
+          env:
+            - name: API_JWT_SECRET
+            - name: DB_AFTER_CONNECT_QUERY
+              value: SET search_path TO _realtime
+            - name: DB_ENC_KEY
+              value: supabaserealtime
+            - name: DB_HOST
+            - name: DB_NAME
+            - name: DB_PASSWORD
+            - name: DB_PORT
+            - name: DB_USER
+            - name: DNS_NODES
+              value: ''''''
+            - name: ENABLE_TAILSCALE
+              value: "false"
+            - name: ERL_AFLAGS
+              value: -proto_dist inet_tcp
+            - name: FLY_ALLOC_ID
+              value: fly123
+            - name: FLY_APP_NAME
+              value: realtime
+            - name: PORT
+              value: "4000"
+            - name: SECRET_KEY_BASE
+              value: UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq
+          image: supabase/realtime:v2.0.2
+          name: realtime-dev.supabase-realtime
+          resources: {}
+      restartPolicy: Always
+status: {}
